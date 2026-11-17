@@ -1,0 +1,122 @@
+<!DOCTYPE html><html lang="fr"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>ConvocUNSS – Convocations compétitions UNSS</title>
+<meta name="description" content="Générer les convocations PDF des élèves inscrits aux compétitions UNSS (4 × A6 par page A4).">
+<link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0a1428">
+<link rel="icon" href="icons/icon-192.png"><link rel="apple-touch-icon" href="icons/icon-192.png">
+<link rel="stylesheet" href="style.css">
+</head><body>
+<header>
+ <img src="icons/icon-192.png" alt="Logo ConvocUNSS" width="74" height="74">
+ <div class="ht"><h1>ConvocUNSS</h1><p>Convocations compétitions UNSS · 4 × A6 par page A4</p></div>
+ <a class="back" href="https://vinztoc.github.io/Mes_Apps_EPS/" title="Retour au portail Mes Apps EPS">← Mes Apps</a>
+</header>
+
+<main class="lay">
+<div class="col">
+
+ <section class="card">
+  <h2>🏆 1. La compétition</h2>
+  <div class="g2">
+   <label>Activité / compétition<input id="activite" placeholder="Cross départemental"></label>
+   <label>Date de la compétition<input id="dateCompet" type="date"></label>
+   <label class="s2">Lieu de la compétition<input id="lieuCompet" placeholder="Stade municipal, ville…"></label>
+   <label>Heure du rendez-vous<input id="horaireRdv" type="time"></label>
+   <label>Lieu du rendez-vous<input id="lieuRdv" placeholder="Devant la vie scolaire"></label>
+   <label>Retour prévu (facultatif)<input id="retour" placeholder="17h00 au lycée"></label>
+   <label>Établissement<input id="etablissement" placeholder="Lycée …"></label>
+   <label>Professeur accompagnateur (facultatif)<input id="prof" placeholder="M. / Mme …"></label>
+   <label>Téléphone de contact (facultatif)<input id="tel" type="tel" placeholder="06 …"></label>
+   <label class="s2">Informations complémentaires<textarea id="infosComp" rows="3" placeholder="Tenue de sport, gourde, pique-nique, licence UNSS…"></textarea></label>
+  </div>
+ </section>
+
+ <section class="card">
+  <h2>🖼 2. Les logos</h2>
+  <div class="logos">
+   <div class="lg" id="lgEtab"><div class="lgp" id="pvEtab">Logo<br>établissement</div><div><b>Établissement</b><small>facultatif · à gauche</small>
+    <div class="row sm"><label class="btn r xs">Choisir…<input type="file" id="fEtab" accept="image/*" hidden></label><button class="btn r xs" data-del="etab" hidden>✕</button></div></div></div>
+   <div class="lg" id="lgAs"><div class="lgp" id="pvAs">Logo<br>AS</div><div><b>Association sportive</b><small>à droite, avant l'UNSS</small>
+    <div class="row sm"><label class="btn r xs">Choisir…<input type="file" id="fAs" accept="image/*" hidden></label><button class="btn r xs" data-del="as" hidden>✕</button></div></div></div>
+   <div class="lg"><div class="lgp ok"><img src="icons/logo-unss.png" alt="Logo officiel UNSS"></div><div><b>UNSS</b><small>logo officiel · toujours affiché à droite du logo AS</small></div></div>
+  </div>
+  <p class="rgpd">Les logos restent enregistrés sur cet appareil pour les prochaines convocations.</p>
+ </section>
+
+ <section class="card">
+  <h2>👥 3. Élèves convoqués <span id="nb" class="pill">0</span></h2>
+  <div class="row" style="margin-top:0">
+   <label class="btn b">📁 Importer l'export UNSS<input type="file" id="fUnss" accept=".xlsx,.xls,.csv,.ods" hidden></label>
+   <button class="btn r" id="bPick">🎓 Choisir dans Mes Apps EPS</button>
+   <button class="btn r" id="bAdd">＋ Ajouter un élève</button>
+  </div>
+  <p class="rgpd">Export de la liste des inscrits depuis le site UNSS (.xlsx, .xls ou .csv) : les colonnes Nom, Prénom, Classe, Catégorie et Activité sont détectées automatiquement. Les classes manquantes sont complétées depuis Mes Apps EPS.</p>
+  <div id="liste" class="lst"></div>
+  <div class="row"><button class="btn r xs" id="bSort">A→Z Trier</button><button class="btn r xs" id="bSortC">Trier par classe</button><button class="btn danger xs" id="bClr">🗑 Vider la liste</button></div>
+ </section>
+
+ <section class="card">
+  <h2>📄 4. Générer les convocations</h2>
+  <div class="opts">
+   <label class="ck"><input type="checkbox" id="oClasse" checked> Afficher la classe et la catégorie</label>
+   <label class="ck"><input type="checkbox" id="oCoupe" checked> Traits de coupe en pointillés</label>
+   <label class="ck"><input type="checkbox" id="oRecap"> Ajouter une liste récapitulative (vie scolaire, appel)</label>
+   <label class="ck"><input type="checkbox" id="oSave" checked> Enregistrer les convocations dans Mes Apps EPS</label>
+  </div>
+  <button class="btn big" id="bPdf">📥 Générer et télécharger le PDF</button>
+  <div id="msg" role="status"></div>
+ </section>
+
+ <section class="card">
+  <h2>💾 5. Mes Apps EPS</h2>
+  <p id="epsInfo" class="info">Recherche de la liste des élèves…</p>
+  <div class="row">
+   <button class="btn b" id="bSave">💾 Enregistrer dans Mes Apps EPS</button>
+   <button class="btn r" id="bExp">⬇ Exporter (.xlsx)</button>
+   <label class="btn r">📂 Charger la liste<input type="file" id="fEps" accept=".xlsx,.csv" hidden></label>
+  </div>
+  <div id="msgE" role="status"></div>
+  <p class="rgpd">Chaque convocation est ajoutée à la fiche de l'élève (feuille <b>convocunss</b> : date, activité, lieu, rendez-vous). « Charger la liste » accepte le fichier .xlsx ou .csv de Mes Apps EPS si cet appareil n'a pas encore de liste. Les données restent sur cet appareil.</p>
+ </section>
+</div>
+
+<aside class="col pvcol">
+ <section class="card sticky">
+  <h2>👁 Aperçu (format A6)</h2>
+  <div class="paperwrap"><div class="paper" id="paper">
+   <div class="p-logos"><div class="p-l" id="ppEtab"><span>Logo étab.</span></div><div class="p-r"><div class="p-l p-as" id="ppAs"><span>AS</span></div><img class="p-unss" src="icons/logo-unss.png" alt="UNSS"></div></div>
+   <div class="p-title">CONVOCATION</div>
+   <div class="p-el"><small>ÉLÈVE CONVOQUÉ(E)</small><b id="ppNom">NOM Prénom</b><span id="ppCl"></span></div>
+   <dl class="p-dt"><dt>Activité</dt><dd id="ppAct">-</dd><dt>Date</dt><dd id="ppDate">-</dd><dt>Lieu</dt><dd id="ppLieu">-</dd></dl>
+   <div class="p-rdv"><b>RENDEZ-VOUS</b><span id="ppRdv">-</span><span id="ppRet"></span></div>
+   <div class="p-inf" id="ppInfW"><b>Informations utiles</b><span id="ppInf"></span></div>
+   <div class="p-foot"><div id="ppProf"></div><div class="p-fl"><span id="ppEtabN"></span><span>Association Sportive</span></div></div>
+  </div></div>
+  <div class="row pvnav"><button class="btn r xs" id="pvPrev" aria-label="Élève précédent">‹</button><span id="pvIdx">—</span><button class="btn r xs" id="pvNext" aria-label="Élève suivant">›</button></div>
+  <p class="rgpd" style="text-align:center">Le PDF place 4 convocations A6 par page A4, prêtes à découper.</p>
+ </section>
+</aside>
+</main>
+
+<div id="pick" class="ov" hidden><div class="fc"><button class="xb" id="pkX" aria-label="Fermer">✕</button>
+ <h2>🎓 Choisir dans Mes Apps EPS</h2>
+ <div class="row" style="margin-top:0"><select id="pkC"><option value="">Toutes les classes</option></select><input id="pkS" placeholder="🔍 Rechercher…"></div>
+ <div class="row sm"><button class="btn r xs" id="pkAll">Tout cocher</button><button class="btn r xs" id="pkNone">Tout décocher</button><span id="pkN" class="info"></span></div>
+ <div id="pkL" class="pkl"></div>
+ <div class="row"><button class="btn" id="pkOk">Ajouter la sélection</button></div>
+</div></div>
+
+<div id="toast" role="status" aria-live="polite"></div>
+
+<footer class="foot">
+ <div><a href="https://vinztoc.github.io/Mes_Apps_EPS/">Portail Mes Apps EPS</a> · <a href="https://vinztoc.github.io/Mes_Apps_EPS/confidentialite.html">Politique de confidentialité</a></div>
+ <p>ConvocUNSS · Vincent TOCQUIN – « VinZ Neuron »</p>
+</footer>
+<p class="ver">Version <span id="ver"></span> · données stockées uniquement sur cet appareil</p>
+
+<script src="version.js"></script>
+<script src="lib/jspdf.umd.min.js"></script>
+<script src="lib/xlsx.full.min.js"></script>
+<script src="eps-core.js"></script>
+<script src="app.js"></script>
+</body></html>

@@ -1,5 +1,5 @@
 importScripts('version.js');
-const V='convocunss-v'+APP_VERSION,F=['./','index.html','version.js','style.css','app.js','eps-core.js','lib/jspdf.umd.min.js','lib/xlsx.full.min.js','manifest.webmanifest','icons/icon-192.png','icons/icon-512.png','icons/logo-unss.png'];
+const V='convocunss-v'+APP_VERSION,F=['nouveautes.js','nouveautes.json','./','index.html','version.js','style.css','app.js','eps-core.js','lib/jspdf.umd.min.js','lib/xlsx.full.min.js','manifest.webmanifest','icons/icon-192.png','icons/icon-512.png','icons/logo-unss.png'];
 const T=2500; // si le réseau ne répond pas en 2,5 s, on sert la copie hors ligne
 const net=r=>new Promise((ok,ko)=>{const t=setTimeout(()=>ko(new Error('timeout')),T);fetch(r,{cache:'no-cache'}).then(x=>{clearTimeout(t);ok(x)},e=>{clearTimeout(t);ko(e)})});
 self.addEventListener('install',e=>{e.waitUntil(caches.open(V).then(c=>Promise.all(F.map(u=>fetch(u,{cache:'reload'}).then(r=>r.ok&&c.put(u,r)).catch(()=>{})))));self.skipWaiting()});
